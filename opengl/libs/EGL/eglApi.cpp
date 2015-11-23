@@ -509,11 +509,16 @@ EGLSurface eglCreateWindowSurface(  EGLDisplay dpy, EGLConfig config,
         cnx->egl.eglGetConfigAttrib(iDpy, config, EGL_ALPHA_SIZE, &a);
         if (a > 0) {
             // alpha-channel requested, there's really only one suitable format
+            if (!cnx->egl.eglGetConfigAttrib(iDpy, config, EGL_NATIVE_VISUAL_ID,
+                    &format)) {
+                ALOGE("eglGetConfigAttrib(EGL_NATIVE_VISUAL_ID) failed: %#x",
+                        eglGetError());
 #ifdef USE_BGRA_8888
-            format = HAL_PIXEL_FORMAT_BGRA_8888;
+                format = HAL_PIXEL_FORMAT_BGRA_8888;
 #else
-            format = HAL_PIXEL_FORMAT_RGBA_8888;
+                format = HAL_PIXEL_FORMAT_RGBA_8888;
 #endif
+            }
         } else {
             EGLint r, g, b;
             r = g = b = 0;
