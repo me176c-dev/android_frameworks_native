@@ -217,6 +217,9 @@ HWComposer::~HWComposer() {
     if (mHwc) {
         hwc_close_1(mHwc);
     }
+    if (mDummyHwc) {
+        hwc_close_1(mDummyHwc);
+    }
     if (mFbDev) {
         framebuffer_close(mFbDev);
     }
@@ -237,6 +240,14 @@ void HWComposer::loadHwcModule()
     if (err) {
         ALOGE("%s device failed to initialize (%s)",
               HWC_HARDWARE_COMPOSER, strerror(-err));
+        return;
+    }
+
+    // Check for dummy hardware composer
+    if (mHwc->common.version == 0 && mHwc->setPowerMode) {
+        ALOGW("Using dummy hardware composer only for power mode changes\n");
+        mDummyHwc = mHwc;
+        mHwc = NULL;
         return;
     }
 
@@ -845,6 +856,8 @@ status_t HWComposer::setPowerMode(int disp, int mode) {
             return (status_t)mHwc->blank(mHwc, disp,
                     mode == HWC_POWER_MODE_OFF ? 1 : 0);
         }
+    } else if (mDummyHwc) {
+        return (status_t)mDummyHwc->setPowerMode(mDummyHwc, disp, mode);
     }
     return NO_ERROR;
 }

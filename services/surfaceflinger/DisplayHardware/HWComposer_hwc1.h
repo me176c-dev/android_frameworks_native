@@ -389,6 +389,7 @@ private:
     sp<SurfaceFlinger>              mFlinger;
     framebuffer_device_t*           mFbDev;
     struct hwc_composer_device_1*   mHwc;
+    struct hwc_composer_device_1*   mDummyHwc;
     // invariant: mLists[0] != NULL iff mHwc != NULL
     // mLists[i>0] can be NULL. that display is to be ignored
     struct hwc_display_contents_1*  mLists[MAX_HWC_DISPLAYS];
