@@ -845,6 +845,8 @@ status_t HWComposer::setPowerMode(int disp, int mode) {
             return (status_t)mHwc->blank(mHwc, disp,
                     mode == HWC_POWER_MODE_OFF ? 1 : 0);
         }
+    } else if (mFbDev) {
+        return (status_t)mFbDev->enableScreen(mFbDev, mode);
     }
     return NO_ERROR;
 }
